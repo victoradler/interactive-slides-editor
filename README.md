@@ -1,24 +1,246 @@
 # 🎨 Frontend Teacher - Editor de Slides Interativo
 
-Um editor de slides moderno e intuitivo desenvolvido com React, TypeScript e Konva para criar apresentações interativas com elementos de texto e imagem.
+> Um editor de apresentações moderno e intuitivo desenvolvido com React, TypeScript e Konva para criar slides interativos com elementos de texto e imagem.
 
-## ✨ Funcionalidades
+[![React](https://img.shields.io/badge/React-18-61dafb?logo=react)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-5-646cff?logo=vite)](https://vitejs.dev/)
 
-### 🎯 Gerenciamento de Slides
-- ✅ Criar novos slides
-- ✅ Navegar entre slides
-- ✅ Gerenciamento de estado global com Zustand
+---
 
-### 🎨 Paleta de Cores
-- **Primary**: `#5C8EF2` - Azul principal
-- **Secondary**: `#3C4959` - Cinza escuro
-- **Accent**: `#038C7F` - Verde azulado
-- **Success**: `#65BFAF` - Verde claro
-- **Warning**: `#F2B84B` - Amarelo
+## 📋 Índice
 
-### 💅 Variáveis CSS
-As cores estão disponíveis como variáveis CSS no arquivo `src/styles/variables.scss`:
+- [Visão Geral](#-visão-geral)
+- [Funcionalidades](#-funcionalidades)
+- [Tecnologias](#-tecnologias)
+- [Instalação](#-instalação)
+- [Como Usar](#-como-usar)
+- [Arquitetura](#-arquitetura)
+- [Paleta de Cores](#-paleta-de-cores)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Scripts](#-scripts)
+- [Contribuição](#-contribuição)
+
+---
+
+## 🎯 Visão Geral
+
+O **Frontend Teacher** é uma aplicação web para criação e edição de apresentações de forma visual e interativa. Inspirado em ferramentas profissionais, oferece uma experiência fluida com drag-and-drop, edição inline e controles intuitivos.
+
+### ✨ Destaques
+
+- 🎨 **Interface moderna** com feedback visual em tempo real
+- ⚡ **Performance otimizada** usando Canvas 2D (Konva.js)
+- 💾 **Persistência automática** de todas as alterações
+- 🎯 **Controles intuitivos** com atalhos de teclado
+- 📱 **Canvas responsivo** com proporção 16:9
+
+---
+
+## 🚀 Funcionalidades
+
+### 📊 Gerenciamento de Slides
+
+- ✅ Criar, navegar e organizar slides
+- ✅ Seleção visual do slide ativo
+- ✅ Estado global sincronizado com Zustand
+
+### 📝 Elementos de Texto
+
+| Funcionalidade | Descrição |
+|----------------|-----------|
+| **Adicionar** | Clique em "+ Texto" para inserir |
+| **Editar** | Duplo clique para edição inline |
+| **Posicionar** | Arraste livremente pelo canvas |
+| **Rotacionar** | Use a alça superior do transformer |
+| **Redimensionar** | Arraste as bordas/cantos |
+| **Deletar** | Selecione e pressione Delete/Backspace |
+
+### 🖼️ Elementos de Imagem
+
+| Funcionalidade | Descrição |
+|----------------|-----------|
+| **Upload** | Suporte a formatos JPG, PNG, SVG |
+| **Posicionar** | Arraste livremente pelo canvas |
+| **Rotacionar** | Use a alça superior do transformer |
+| **Redimensionar** | Mantém proporção e qualidade |
+| **Deletar** | Selecione e pressione Delete/Backspace |
+
+### ⌨️ Atalhos de Teclado
+
+| Atalho | Ação |
+|--------|------|
+| `Delete` / `Backspace` | Deletar elemento selecionado |
+| `Enter` / `Esc` | Finalizar edição de texto |
+| `Duplo clique` | Editar texto |
+| `Clique simples` | Selecionar elemento |
+| `Clique no fundo` | Desselecionar tudo |
+
+---
+
+## 🛠️ Tecnologias
+
+### Core
+
+- **[React 18](https://reactjs.org/)** - Biblioteca para interfaces
+- **[TypeScript](https://www.typescriptlang.org/)** - Tipagem estática
+- **[Vite](https://vitejs.dev/)** - Build tool ultrarrápida
+
+### Canvas & Estado
+
+- **[Konva.js](https://konvajs.org/)** - Renderização 2D performática
+- **[React-Konva](https://konvajs.org/docs/react/)** - Integração React + Konva
+- **[Zustand](https://zustand-demo.pmnd.rs/)** - Gerenciamento de estado simples
+
+### Estilização & Qualidade
+
+- **[SASS](https://sass-lang.com/)** - Pré-processador CSS
+- **[ESLint](https://eslint.org/)** - Linting e padronização
+
+### ⚖️ Decisões Técnicas
+
+| Decisão | Razão |
+|---------|-------|
+| **Zustand** | Simplicidade e previsibilidade do estado |
+| **Konva** | Performance superior para manipulação gráfica |
+| **Persistência local** | Foco na UX sem complexidade de backend |
+| **TypeScript** | Segurança de tipos e melhor DX |
+
+---
+
+## 📦 Instalação
+
+```bash
+# Clone o repositório
+git clone https://github.com/seu-usuario/frontend-teacher.git
+
+# Entre no diretório
+cd frontend-teacher
+
+# Instale as dependências
+npm install
+
+# Inicie o servidor de desenvolvimento
+npm run dev
+```
+
+Acesse em: `http://localhost:5173`
+
+### Requisitos
+
+- Node.js 18+ 
+- npm 9+ ou yarn 1.22+
+
+---
+
+## 🎮 Como Usar
+
+### 1️⃣ Criar um Slide
+
+```
+Clique em "+ Slide" → Novo slide é criado e selecionado automaticamente
+```
+
+### 2️⃣ Adicionar Texto
+
+```
+1. Clique em "+ Texto"
+2. Duplo clique no texto para editar
+3. Digite o conteúdo
+4. Pressione Enter ou clique fora para finalizar
+```
+
+### 3️⃣ Adicionar Imagem
+
+```
+1. Clique em "+ Imagem"
+2. Selecione o arquivo (JPG, PNG, SVG)
+3. A imagem aparece no centro do canvas
+```
+
+### 4️⃣ Manipular Elementos
+
+**Selecionar**: Clique no elemento  
+**Mover**: Arraste o elemento  
+**Rotacionar**: Arraste a alça superior circular  
+**Redimensionar**: Arraste as bordas ou cantos  
+**Deletar**: Selecione e pressione `Delete` ou `Backspace`
+
+---
+
+## 🏗️ Arquitetura
+
+### Estado Global (Zustand)
+
+```typescript
+interface SlidesStore {
+  // Estado
+  slides: Slide[]
+  activeSlideId: string | null
+  
+  // Ações
+  addSlide: () => void
+  setActiveSlide: (id: string) => void
+  addTextElement: () => void
+  addImageElement: (src: string) => void
+  updateElement: (slideId: string, elementId: string, attrs: Partial<Element>) => void
+  removeElement: (slideId: string, elementId: string) => void
+}
+```
+
+### Tipos de Elementos
+
+```typescript
+// Texto
+interface TextElement {
+  id: string
+  type: 'TEXT'
+  x: number
+  y: number
+  width?: number
+  height?: number
+  rotation?: number
+  text: string
+  fontSize: number
+}
+
+// Imagem
+interface ImageElement {
+  id: string
+  type: 'IMAGE'
+  x: number
+  y: number
+  width?: number
+  height?: number
+  rotation?: number
+  src: string
+}
+```
+
+### Fluxo de Dados
+
+```
+User Action → Store Action → State Update → Re-render → Konva Canvas Update
+```
+
+---
+
+## 🎨 Paleta de Cores
+
+### Cores Principais
+
+| Cor | Hex | Uso |
+|-----|-----|-----|
+| 🔵 **Primary** | `#5C8EF2` | Botões principais, destaques |
+| ⚫ **Secondary** | `#3C4959` | Textos, bordas |
+| 🟢 **Accent** | `#038C7F` | Hovers, estados ativos |
+| 🟩 **Success** | `#65BFAF` | Confirmações, feedback positivo |
+| 🟡 **Warning** | `#F2B84B` | Alertas, avisos |
+
+### Variáveis CSS (SASS)
+
 ```scss
+// Arquivo: src/styles/variables.scss
 :root {
   --primary-color: #5C8EF2;
   --secondary-color: #3C4959;
@@ -29,6 +251,7 @@ As cores estão disponíveis como variáveis CSS no arquivo `src/styles/variable
 ```
 
 **Exemplo de uso:**
+
 ```scss
 .my-button {
   background-color: var(--primary-color);
@@ -40,207 +263,113 @@ As cores estão disponíveis como variáveis CSS no arquivo `src/styles/variable
 }
 ```
 
-## 🚀 Tecnologias Utilizadas
-- **React 18** - Biblioteca principal
-- **TypeScript** - Tipagem estática
-- **Vite** - Build tool e dev server
-- **Konva.js** - Canvas 2D para manipulação gráfica
-- **React-Konva** - Integração React com Konva
-- **Zustand** - Gerenciamento de estado global
-- **SASS** - Pré-processador CSS
-- **ESLint** - Linting e padronização de código
+---
 
-
-## ⚖️ Trade-offs e Decisões Técnicas
-- Zustand foi escolhido pela simplicidade e previsibilidade do estado
-- Persistência local foi priorizada em vez de backend para focar na UX
-- Konva é usado apenas para renderização e interação visual
-- Nenhuma lógica crítica fica acoplada ao canva
-
-
-### 📝 Elementos de Texto
-- ✅ Adicionar elementos de texto
-- ✅ **Edição inline** - Duplo clique para editar
-- ✅ **Arrastar e posicionar** - Drag & drop intuitivo
-- ✅ **Rotação** - Rotacionar elementos livremente
-- ✅ **Redimensionamento** - Redimensionar com preservação de proporção
-- ✅ **Seleção visual** - Transformer com alças de controle
-- ✅ **Persistência** - Todas as alterações são salvas automaticamente
-
-### 🖼️ Elementos de Imagem
-- ✅ Upload e inserção de imagens
-- ✅ **Arrastar e posicionar** - Drag & drop intuitivo
-- ✅ **Rotação** - Rotacionar imagens livremente  
-- ✅ **Redimensionamento** - Redimensionar mantendo qualidade
-- ✅ **Seleção visual** - Transformer com alças de controle
-- ✅ **Persistência** - Todas as alterações são salvas automaticamente
-
-### ⌨️ Controles e Atalhos
-- ✅ **Delete/Backspace** - Deletar elementos selecionados
-- ✅ **Duplo clique** - Editar texto
-- ✅ **Clique simples** - Selecionar elemento
-- ✅ **Clique no fundo** - Desselecionar tudo
-- ✅ **Enter/Escape** - Finalizar edição de texto
-
-### 🎨 Interface
-- ✅ Canvas responsivo (960x540)
-- ✅ Sidebar com lista de slides
-- ✅ Botões de ação intuitivos
-- ✅ Visual feedback durante interações
-
-## 📦 Instalação
-```bash
-# Clone o repositório
-git clone <url-do-repositorio>
-
-# Entre no diretório
-cd frontend_teacher
-
-# Instale as dependências
-npm install
-
-# Execute em modo desenvolvimento
-npm run dev
-
-# Execute build de produção
-npm run build
-```
-
-## 🎮 Como Usar
-
-### Criando Slides
-1. Clique em **"+ Slide"** para criar um novo slide
-2. O slide será criado e automaticamente selecionado
-
-### Adicionando Texto
-1. Clique em **"+ Texto"** para adicionar um elemento de texto
-2. **Duplo clique** no texto para editá-lo
-3. **Digite** o conteúdo desejado
-4. **Enter** ou **clique fora** para finalizar a edição
-
-### Adicionando Imagens
-1. Clique em **"+ Imagem"** (se disponível)
-2. Selecione uma imagem do seu computador
-3. A imagem será adicionada ao slide atual
-
-### Manipulando Elementos
-- **Selecionar**: Clique simples no elemento
-- **Arrastar**: Clique e arraste o elemento
-- **Rotacionar**: Use a alça de rotação do Transformer
-- **Redimensionar**: Arraste as alças das bordas/cantos
-- **Deletar**: Selecione o elemento e pressione **Delete** ou **Backspace**
-
-## 🏗️ Estrutura do Projeto
+## 📁 Estrutura do Projeto
 
 ```
-src/
-├── components/
-│   ├── canvas/
-│   │   ├── CanvasStage.tsx      # Stage principal do Konva
-│   │   ├── TextElement.tsx      # Componente de texto
-│   │   └── ImageElement.tsx     # Componente de imagem
-│   └── ui/                      # Componentes de interface
-├── pages/
-│   └── teacher.tsx              # Página principal do editor
-├── store/
-│   └── useSlidesStore.ts        # Estado global (Zustand)
-├── types/
-│   └── slide.ts                 # Definições de tipos TypeScript
-└── utils/                       # Funções utilitárias
+frontend-teacher/
+├── src/
+│   ├── components/
+│   │   ├── canvas/
+│   │   │   ├── CanvasStage.tsx      # Stage principal Konva
+│   │   │   ├── TextElement.tsx      # Elemento de texto
+│   │   │   └── ImageElement.tsx     # Elemento de imagem
+│   │   └── ui/                      # Componentes de UI
+│   │       └── Sidebar.tsx          # Barra lateral
+│   ├── pages/
+│   │   └── teacher.tsx              # Página principal
+│   ├── store/
+│   │   └── useSlidesStore.ts        # Store Zustand
+│   ├── types/
+│   │   └── slide.ts                 # Tipos TypeScript
+│   ├── styles/
+│   │   └── variables.scss           # Variáveis CSS
+│   └── utils/                       # Funções utilitárias
+├── public/                          # Assets estáticos
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+└── README.md
 ```
 
-## 🎯 Arquitetura de Estado
+---
 
-### Zustand Store (`useSlidesStore`)
-```typescript
-{
-  slides: Slide[],              // Array de slides
-  activeSlideId: string | null, // ID do slide ativo
-  
-  // Actions
-  addSlide: () => void,
-  setActiveSlide: (id: string) => void,
-  addTextElement: () => void,
-  addImageElement: (src: string) => void,
-  updateElement: (slideId, elementId, attrs) => void,
-  removeElement: (slideId, elementId) => void
-}
-```
+## 🔧 Scripts
 
-### Tipos de Elementos
-```typescript
-// Elemento de Texto
-TextElement {
-  id: string,
-  type: 'TEXT',
-  x: number,
-  y: number,
-  width?: number,
-  height?: number,
-  rotation?: number,
-  text: string,
-  fontSize: number
-}
+| Comando | Descrição |
+|---------|-----------|
+| `npm run dev` | Inicia servidor de desenvolvimento |
+| `npm run build` | Gera build de produção |
+| `npm run preview` | Preview do build |
+| `npm run lint` | Executa ESLint |
+| `npm run type-check` | Verifica tipos TypeScript |
 
-// Elemento de Imagem  
-ImageElement {
-  id: string,
-  type: 'IMAGE', 
-  x: number,
-  y: number,
-  width?: number,
-  height?: number,
-  rotation?: number,
-  src: string
-}
-```
-
-## 🔧 Scripts Disponíveis
-
-- `npm run dev` - Inicia servidor de desenvolvimento
-- `npm run build` - Gera build de produção
-- `npm run preview` - Preview do build de produção
-- `npm run lint` - Executa ESLint
+---
 
 ## 🌟 Recursos Avançados
 
-### Persistência de Estado
-- Todas as alterações são salvas automaticamente no estado global
-- Posições, rotações, dimensões e conteúdo persistem entre navegações
+### Persistência Automática
+Todas as alterações (posição, rotação, dimensão, conteúdo) são salvas automaticamente no estado global e persistem entre navegações.
 
-### Performance
-- Elementos são renderizados usando Konva.js para máxima performance
-- Re-renders otimizados com React.memo e useCallback onde necessário
+### Performance Otimizada
+- Renderização via Canvas 2D para elementos gráficos complexos
+- Re-renders otimizados com `React.memo` e `useCallback`
+- Lazy loading de imagens
 
-### Experiência do Usuário
+### UX Refinada
 - Feedback visual imediato durante interações
 - Prevenção de ações conflitantes (ex: não deletar durante edição)
-- Interface intuitiva seguindo padrões de editores gráficos
+- Transformações suaves com animações
+
+---
 
 ## 🚧 Desenvolvimento
 
-### Adicionando Novas Funcionalidades
-1. Defina os tipos em `src/types/slide.ts`
-2. Atualize o store em `src/store/useSlidesStore.ts`
-3. Crie componentes em `src/components/canvas/`
-4. Integre no `CanvasStage.tsx`
+### Adicionar Nova Funcionalidade
+
+1. **Definir tipos** em `src/types/slide.ts`
+2. **Atualizar store** em `src/store/useSlidesStore.ts`
+3. **Criar componente** em `src/components/canvas/`
+4. **Integrar** no `CanvasStage.tsx`
 
 ### Padrões de Código
-- Use TypeScript para tipagem forte
-- Siga as configurações do ESLint
-- Mantenha componentes pequenos e focados
-- Use hooks customizados para lógica complexa
 
-## 📝 Licença
+- ✅ Use TypeScript para todas as interfaces e tipos
+- ✅ Siga configurações do ESLint
+- ✅ Componentes pequenos e focados (< 200 linhas)
+- ✅ Use hooks customizados para lógica complexa
+- ✅ Teste funcionalidades críticas
 
-Este projeto é parte de um desafio educacional e está disponível para fins de aprendizado.
+---
 
 ## 🤝 Contribuição
 
-Para contribuir com o projeto:
-1. Faça um fork do repositório
-2. Crie uma branch para sua feature
-3. Implemente as mudanças
-4. Teste thoroughly
-5. Submeta um Pull Request
+Contribuições são bem-vindas! Para contribuir:
 
+1. 🍴 Faça um fork do projeto
+2. 🌿 Crie uma branch: `git checkout -b feature/nova-funcionalidade`
+3. 💻 Implemente as mudanças
+4. ✅ Teste thoroughly
+5. 📝 Commit: `git commit -m 'feat: adiciona nova funcionalidade'`
+6. 🚀 Push: `git push origin feature/nova-funcionalidade`
+7. 🎉 Abra um Pull Request
+
+### Commits Semânticos
+
+- `feat:` Nova funcionalidade
+- `fix:` Correção de bug
+- `docs:` Documentação
+- `style:` Formatação
+- `refactor:` Refatoração
+- `test:` Testes
+- `chore:` Manutenção
+
+---
+
+
+<div align="center">
+
+**[⬆ Voltar ao topo](#-frontend-teacher---editor-de-slides-interativo)**
+
+</div>
