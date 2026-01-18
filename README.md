@@ -1,5 +1,26 @@
 # 🎨 Slide Editor
 
+Editor de slides moderno desenvolvido com **React + TypeScript + Konva**, com foco em criação de slides no estilo "Canva/Mentimeter", permitindo adicionar e manipular elementos no canvas com persistência local.
+
+> ✅ Este repositório cobre a experiência do **Professor (Teacher Editor)**: criação, edição e persistência de slides.  
+> 🚧 Próximo passo (opcional): interface do **Aluno** + **slides interativos** (ex: Multiple Choice em tempo real).
+
+---
+
+## 📸 Screenshots
+
+### 🎨 Interface do Editor
+![Interface do Editor](public/image/image_2.png)
+*Interface principal do editor com sidebar e canvas interativo*
+
+### 📝 Funcionalidades do Canvas
+![Funcionalidades do Canvas](public/image/image_3.png)
+*Demonstração das funcionalidades de edição de texto e manipulação de imagens*
+
+---
+
+## ✨ Funcionalidades Editor
+
 Editor de slides moderno desenvolvido com **React + TypeScript + Konva**, com foco em criação de slides no estilo “Canva/Mentimeter”, permitindo adicionar e manipular elementos no canvas com persistência local.
 
 > ✅ Este repositório cobre a experiência do **Professor (Teacher Editor)**: criação, edição e persistência de slides.  
@@ -93,3 +114,40 @@ Cores disponíveis como variáveis em `src/styles/variables.scss`:
   --success-color: #65BFAF;
   --warning-color: #F2B84B;
 }
+```
+
+---
+
+## 🚀 Como Executar
+
+### Pré-requisitos
+- Node.js (versão 16 ou superior)
+- npm ou yarn
+
+### Instalação e Execução
+
+1. **Clone o repositório**:
+   ```bash
+   git clone https://github.com/victoradler/interactive-slides-editor.git
+   cd interactive-slides-editor
+   ```
+
+2. **Instale as dependências**:
+   ```bash
+   npm install
+   ```
+
+3. **Execute o projeto em modo desenvolvimento**:
+   ```bash
+   npm run dev
+   ```
+
+4. **Abra no navegador**:
+   - A aplicação estará disponível em `http://localhost:5173`
+
+### Build para Produção
+
+```bash
+npm run build
+npm run preview
+```
