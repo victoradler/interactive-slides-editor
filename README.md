@@ -10,11 +10,11 @@ Editor de slides moderno desenvolvido com **React + TypeScript + Konva**, com fo
 ## 📸 Screenshots
 
 ### 🎨 Interface do Editor
-![Interface do Editor](public/image/image_2.png)
+![Interface do Editor](https://raw.githubusercontent.com/victoradler/interactive-slides-editor/master/public/image/image_2.png)
 *Interface principal do editor com sidebar e canvas interativo*
 
 ### 📝 Funcionalidades do Canvas
-![Funcionalidades do Canvas](public/image/image_3.png)
+![Funcionalidades do Canvas](https://raw.githubusercontent.com/victoradler/interactive-slides-editor/master/public/image/image_3.png)
 *Demonstração das funcionalidades de edição de texto e manipulação de imagens*
 
 ---
