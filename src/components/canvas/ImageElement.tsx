@@ -1,13 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Image as KonvaImage, Transformer } from 'react-konva';
 import { useSlidesStore } from '../../store/useSlidesStore';
-import { ImageElement as ImageElementType } from '../../types/slide';
-
-interface ImageElementProps {
-  element: ImageElementType;
-  isSelected?: boolean;
-  onSelect?: () => void;
-}
+import { CANVAS_WIDTH, CANVAS_HEIGHT } from '../../constants/canvas';
+import { ImageElementProps } from '../../types/canvas';
 
 export const ImageElement = ({ element, isSelected, onSelect }: ImageElementProps) => {
   const { updateElement, activeSlideId } = useSlidesStore();
@@ -88,6 +83,13 @@ export const ImageElement = ({ element, isSelected, onSelect }: ImageElementProp
         rotation={element.rotation || 0}
         image={image}
         draggable
+        dragBoundFunc={(pos) => {
+          const width = element.width || 100;
+          const height = element.height || 100;
+          const newX = Math.max(0, Math.min(pos.x, CANVAS_WIDTH - width));
+          const newY = Math.max(0, Math.min(pos.y, CANVAS_HEIGHT - height));
+          return { x: newX, y: newY };
+        }}
         onDragEnd={handleDragEnd}
         onTransformEnd={handleTransformEnd}
         onClick={handleClick}

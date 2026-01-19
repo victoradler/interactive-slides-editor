@@ -20,10 +20,18 @@ type SlidesStore = {
   updateElement: (
     slideId: string,
     elementId: string,
-    attrs: Partial<Slide["elements"][number]>
+    attrs: Partial<Slide["elements"][number]>,
   ) => void;
 
   removeElement: (slideId: string, elementId: string) => void;
+
+  addMultipleChoiceSlide: () => void;
+  addWordCloudSlide: () => void;
+
+  updateSlideMeta: (
+    slideId: string,
+    data: Partial<Pick<Slide, "question" | "options">>,
+  ) => void;
 };
 
 export const useSlidesStore = create<SlidesStore>()(
@@ -53,7 +61,9 @@ export const useSlidesStore = create<SlidesStore>()(
           const newSlides = state.slides.filter((slide) => slide.id !== id);
           const newActiveSlideId =
             state.activeSlideId === id
-              ? (newSlides.length > 0 ? newSlides[0].id : null)
+              ? newSlides.length > 0
+                ? newSlides[0].id
+                : null
               : state.activeSlideId;
 
           return {
@@ -94,7 +104,7 @@ export const useSlidesStore = create<SlidesStore>()(
           slides: slides.map((slide) =>
             slide.id === activeSlideId
               ? { ...slide, elements: [...slide.elements, newText] }
-              : slide
+              : slide,
           ),
           selectedElementId: newText.id,
         });
@@ -119,7 +129,7 @@ export const useSlidesStore = create<SlidesStore>()(
           slides: slides.map((slide) =>
             slide.id === activeSlideId
               ? { ...slide, elements: [...slide.elements, newImage] }
-              : slide
+              : slide,
           ),
           selectedElementId: newImage.id,
         });
@@ -136,10 +146,10 @@ export const useSlidesStore = create<SlidesStore>()(
                   elements: slide.elements.map((el) =>
                     el.id === elementId
                       ? ({ ...el, ...attrs } as Slide["elements"][number])
-                      : el
+                      : el,
                   ),
                 }
-              : slide
+              : slide,
           ),
         });
       },
@@ -152,17 +162,55 @@ export const useSlidesStore = create<SlidesStore>()(
             slide.id === slideId
               ? {
                   ...slide,
-                  elements: slide.elements.filter(
-                    (el) => el.id !== elementId
-                  ),
+                  elements: slide.elements.filter((el) => el.id !== elementId),
                 }
-              : slide
+              : slide,
           ),
         });
       },
+
+      addMultipleChoiceSlide: () =>
+        set((state) => {
+          const newSlide: Slide = {
+            id: nanoid(),
+            type: "MULTIPLE_CHOICE",
+            elements: [],
+            question: "Digite sua pergunta...",
+            options: ["Opção 1", "Opção 2", "Opção 3"],
+          };
+
+          return {
+            slides: [...state.slides, newSlide],
+            activeSlideId: newSlide.id,
+            selectedElementId: null,
+          };
+        }),
+
+      addWordCloudSlide: () =>
+        set((state) => {
+          const newSlide: Slide = {
+            id: nanoid(),
+            type: "WORD_CLOUD",
+            elements: [],
+            question: "Digite uma palavra relacionada ao tema...",
+          };
+
+          return {
+            slides: [...state.slides, newSlide],
+            activeSlideId: newSlide.id,
+            selectedElementId: null,
+          };
+        }),
+
+      updateSlideMeta: (slideId, data) =>
+        set((state) => ({
+          slides: state.slides.map((s) =>
+            s.id === slideId ? { ...s, ...data } : s,
+          ),
+        })),
     }),
     {
       name: "teachy-slides-storage",
-    }
-  )
+    },
+  ),
 );

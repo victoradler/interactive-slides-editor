@@ -1,0 +1,130 @@
+.session-modal {
+  padding: 20px;
+
+  &__title {
+    text-align: center;
+    margin-bottom: 24px;
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  &__start-section {
+    text-align: center;
+  }
+
+  &__description {
+    margin-bottom: 24px;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  &__start-btn {
+    padding: 12px 24px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #0056b3;
+    }
+
+    &:active {
+      background: #004085;
+    }
+  }
+
+  &__info-section {
+    margin-bottom: 24px;
+  }
+
+  &__info-item {
+    text-align: center;
+    margin-bottom: 20px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  &__code {
+    font-size: 24px;
+    font-weight: bold;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    letter-spacing: 1px;
+  }
+
+  &__link {
+    font-size: 14px;
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    word-break: break-all;
+    font-family: monospace;
+    color: #333;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  &__copy-btn {
+    padding: 12px 24px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #218838;
+    }
+
+    &:active {
+      background: #1e7e34;
+    }
+  }
+
+  &__end-btn {
+    padding: 12px 24px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #c82333;
+    }
+
+    &:active {
+      background: #bd2130;
+    }
+  }
+}

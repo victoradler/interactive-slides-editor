@@ -1,12 +1,44 @@
 import { useState, useEffect } from "react";
 import { Stage, Layer, Rect } from "react-konva";
 import { useSlidesStore } from "../../store/useSlidesStore";
+import { useSessionStore } from "../../store/useSessionStore";
 import { TextElement } from "./TextElement";
 import { ImageElement } from "./ImageElement";
+import { MultipleChoiceCanvas } from "./MultipleChoiceCanvas";
+import { WordCloudCanvas } from "./WordCloudCanvas";
+import { CANVAS_WIDTH, CANVAS_HEIGHT } from "../../constants/canvas";
 
+// Helper para votos
+function getVotesKey(sessionId: string) {
+  return `teachy:session:${sessionId}:votes`;
+}
 
-const CANVAS_WIDTH = 960;
-const CANVAS_HEIGHT = 540;
+function useLiveVotes(sessionId: string | null) {
+  const [votes, setVotes] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    if (!sessionId) return;
+
+    const votesKey = getVotesKey(sessionId);
+
+    const readVotes = () => {
+      const raw = localStorage.getItem(votesKey);
+      setVotes(raw ? JSON.parse(raw) : {});
+    };
+
+    readVotes();
+
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === votesKey) readVotes();
+    };
+
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [sessionId]);
+
+  return votes;
+}
+
 
 // Componente para o grid de fundo
 function GridBackground() {
@@ -46,7 +78,9 @@ function GridBackground() {
 
 export function CanvasStage() {
   const { slides, activeSlideId, removeElement } = useSlidesStore();
+  const { sessionId } = useSessionStore();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const votes = useLiveVotes(sessionId);
 
   const activeSlide = slides.find(slide => slide.id === activeSlideId);
 
@@ -93,6 +127,27 @@ export function CanvasStage() {
         <h3>Bem-vindo ao Editor de Slides!</h3>
         <p>Selecione um slide no painel lateral ou crie um novo para começar a editar.</p>
       </div>
+    );
+  }
+
+  // Se for Multiple Choice, mostrar preview especial
+  if (activeSlide.type === "MULTIPLE_CHOICE") {
+    return (
+      <MultipleChoiceCanvas
+        question={activeSlide.question || ""}
+        options={activeSlide.options || []}
+        votes={votes}
+      />
+    );
+  }
+
+  // Se for Word Cloud, mostrar preview especial
+  if (activeSlide.type === "WORD_CLOUD") {
+    return (
+      <WordCloudCanvas
+        question={activeSlide.question || ""}
+        words={votes}
+      />
     );
   }
 

@@ -1,0 +1,122 @@
+.wc-modal {
+  padding: 1.5rem;
+  max-width: 600px;
+
+  &__title {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2d3748;
+  }
+
+  &__section {
+    margin-bottom: 1.5rem;
+  }
+
+  &__label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #4a5568;
+  }
+
+  &__input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+  }
+
+  &__publish-btn {
+    width: 100%;
+    padding: 0.875rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    }
+
+    &:disabled {
+      background: #cbd5e0;
+      cursor: not-allowed;
+    }
+  }
+
+  &__warning {
+    margin-top: 0.5rem;
+    color: #e53e3e;
+    font-size: 0.875rem;
+    text-align: center;
+  }
+
+  &__results {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #e2e8f0;
+  }
+
+  &__results-title {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: #2d3748;
+  }
+
+  &__words-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  &__word-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: #f7fafc;
+    border-radius: 8px;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #edf2f7;
+    }
+  }
+
+  &__word-text {
+    font-weight: 600;
+    color: #2d3748;
+  }
+
+  &__word-count {
+    font-size: 0.875rem;
+    color: #718096;
+    background: #e2e8f0;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+  }
+
+  &__empty {
+    margin-top: 2rem;
+    padding: 2rem;
+    text-align: center;
+    color: #718096;
+    background: #f7fafc;
+    border-radius: 8px;
+  }
+}

@@ -1,0 +1,58 @@
+.interactive-type-modal {
+  padding: 2rem;
+  max-width: 600px;
+
+  &__title {
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+  }
+
+  &__description {
+    margin-bottom: 2rem;
+    color: #666;
+    text-align: center;
+  }
+
+  &__options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  &__option {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+
+    &:hover {
+      border-color: #667eea;
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+    }
+
+    h4 {
+      margin: 1rem 0 0.5rem;
+      font-size: 1.1rem;
+      color: #2d3748;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: #718096;
+      line-height: 1.5;
+    }
+  }
+
+  &__icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+}

@@ -1,13 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { Text, Transformer } from 'react-konva';
 import { useSlidesStore } from '../../store/useSlidesStore';
-import { TextElement as TextElementType } from '../../types/slide';
-
-interface TextElementProps {
-  element: TextElementType;
-  isSelected?: boolean;
-  onSelect?: () => void;
-}
+import { CANVAS_WIDTH, CANVAS_HEIGHT } from '../../constants/canvas';
+import { TextElementProps } from '../../types/canvas';
 
 export const TextElement = ({ element, isSelected, onSelect }: TextElementProps) => {
   const { updateElement, activeSlideId } = useSlidesStore();
@@ -195,6 +190,13 @@ export const TextElement = ({ element, isSelected, onSelect }: TextElementProps)
         text={element.text}
         fontSize={element.fontSize}
         draggable={!isEditing}
+        dragBoundFunc={(pos) => {
+          const width = element.width || 100;
+          const height = element.height || 50;
+          const newX = Math.max(0, Math.min(pos.x, CANVAS_WIDTH - width));
+          const newY = Math.max(0, Math.min(pos.y, CANVAS_HEIGHT - height));
+          return { x: newX, y: newY };
+        }}
         onDragEnd={handleDragEnd}
         onTransformEnd={handleTransformEnd}
         onClick={handleClick}

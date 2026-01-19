@@ -1,153 +1,147 @@
-# 🎨 Slide Editor
+# 🎨 Interactive Slide Editor (Teacher + Student)
 
-Editor de slides moderno desenvolvido com **React + TypeScript + Konva**, com foco em criação de slides no estilo "Canva/Mentimeter", permitindo adicionar e manipular elementos no canvas com persistência local.
+Editor de slides interativo desenvolvido com **React + TypeScript + Konva**, inspirado em ferramentas como **Canva** e **Mentimeter**.
 
-> ✅ Este repositório cobre a experiência do **Professor (Teacher Editor)**: criação, edição e persistência de slides.  
-> 🚧 Próximo passo (opcional): interface do **Aluno** + **slides interativos** (ex: Multiple Choice em tempo real).
-
----
-
-## 📸 Screenshots
-
-### 🎨 Interface do Editor
-![Interface do Editor](https://raw.githubusercontent.com/victoradler/interactive-slides-editor/master/public/image/image_2.png)
-*Interface principal do editor com sidebar e canvas interativo*
-
-### 📝 Funcionalidades do Canvas
-![Funcionalidades do Canvas](https://raw.githubusercontent.com/victoradler/interactive-slides-editor/master/public/image/image_3.png)
-*Demonstração das funcionalidades de edição de texto e manipulação de imagens*
+O projeto permite que professores criem apresentações visuais e interativas e que alunos participem em tempo real por meio de uma interface separada.
 
 ---
 
-## ✨ Funcionalidades Editor
+## 🎯 Objetivo do Projeto
 
-Editor de slides moderno desenvolvido com **React + TypeScript + Konva**, com foco em criação de slides no estilo “Canva/Mentimeter”, permitindo adicionar e manipular elementos no canvas com persistência local.
 
-> ✅ Este repositório cobre a experiência do **Professor (Teacher Editor)**: criação, edição e persistência de slides.  
-> 🚧 Próximo passo (opcional): interface do **Aluno** + **slides interativos** (ex: Multiple Choice em tempo real).
-
----
-
-## ✨ Funcionalidades
-
-### 🎯 Slides
-- ✅ Criar novos slides
-- ✅ Navegar entre slides
-- ✅ Persistência automática (localStorage via Zustand Persist)
-
-### 📝 Elementos de Texto
-- ✅ Adicionar texto
-- ✅ **Edição inline** (duplo clique)
-- ✅ **Arrastar e posicionar** (drag & drop)
-- ✅ **Rotação**
-- ✅ **Redimensionamento** (Transformer)
-- ✅ **Seleção visual** (alças de controle)
-- ✅ Persistência de todas as alterações
-
-### 🖼️ Elementos de Imagem
-- ✅ Upload e inserção de imagens
-- ✅ **Arrastar e posicionar**
-- ✅ **Rotação**
-- ✅ **Redimensionamento** (Transformer)
-- ✅ **Seleção visual**
-- ✅ Persistência de todas as alterações
-
-### ⌨️ Controles e Atalhos
-- ✅ `Delete` / `Backspace` — Deletar elemento selecionado
-- ✅ `Duplo clique` — Editar texto
-- ✅ `Clique simples` — Selecionar elemento
-- ✅ `Clique no fundo` — Desselecionar
-- ✅ `Enter` / `Escape` — Finalizar edição de texto
-
-### 🎨 UI / UX
-- ✅ Canvas responsivo (960x540)
-- ✅ Sidebar com lista de slides e ações rápidas
-- ✅ Feedback visual durante interações
-- ✅ Tela inicial para fluxo de “começar a criar”
+- Arquitetura de aplicações React
+- Manipulação avançada de canvas (Konva)
+- Experiência interativa em tempo real
+- Separação clara entre **Teacher (Editor)** e **Student (Interação)**
 
 ---
 
-## 🧠 Decisões Técnicas e Trade-offs
+## 🧪 Slides Interativos (Mentimeter-like)
 
-- **Zustand** foi escolhido pela simplicidade e previsibilidade do estado global.
-- A persistência foi feita no **localStorage** (via `persist`) para manter o foco na **experiência do editor**.
-- O **Konva** é usado apenas para **renderização e interação visual** (drag/resize/rotate).
-- O estado do editor é a **source of truth** no store — evitando acoplamento de lógica ao canvas.
+Foram implementados **3 tipos de slides interativos**, atendendo ao requisito do desafio:
 
----
+### ✅ 1. Multiple Choice
+- Professor define pergunta e opções
+- Alunos votam a partir de seus dispositivos
+- Resultados exibidos **em tempo real** em formato de **gráfico de barras**
 
-## 🧱 Arquitetura de Estado (Zustand)
+### ✅ 2. Word Cloud
+- Alunos enviam palavras livres
+- As palavras aparecem em uma **nuvem**
+- O tamanho de cada palavra cresce conforme a frequência
 
-O store mantém:
-- `slides`: lista de slides com seus elementos
-- `activeSlideId`: slide atual
-- `selectedElementId`: elemento selecionado no canvas
+### ✅ 3. Live Bar Chart / Ranking
+- Respostas agregadas e exibidas em barras
+- Atualização ao vivo conforme novos votos chegam
 
-Ações principais:
-- `addSlide`, `setActiveSlide`
-- `addTextElement`, `addImageElement`
-- `updateElement`, `removeElement`
-- `setSelectedElement`
-
----
-
-## 💾 Persistência (localStorage)
-
-A persistência é automática usando `zustand/middleware`:
-
-- Slides e elementos são serializados em JSON
-- Alterações permanecem após recarregar a página (F5)
-
-> Observação: imagens são armazenadas como `base64` (DataURL). Em produção, isso normalmente seria substituído por upload + URL.
+> 🔄 **Realtime:** implementado via `localStorage + storage events` entre abas/janelas  
+> ⚖️ **Trade-off:** solução simples para demo sem backend. Em produção, pode ser substituída facilmente por WebSocket (ex: Socket.io).
 
 ---
 
-## 🎨 Paleta de Cores e Variáveis CSS
+## 🧑‍🏫 Teacher (Editor)
 
-Cores disponíveis como variáveis em `src/styles/variables.scss`:
+### Funcionalidades
+- Criar, remover e navegar entre slides
+- Canvas interativo com **drag, resize e rotate**
+- Elementos de texto e imagem
+- Slides estáticos e interativos
+- Gerenciamento de sessão para alunos
+- Publicação de perguntas em tempo real
 
-```scss
-:root {
-  --primary-color: #5C8EF2;
-  --secondary-color: #3C4959;
-  --accent-color: #038C7F;
-  --success-color: #65BFAF;
-  --warning-color: #F2B84B;
-}
-```
+### Elementos de Texto
+- Edição inline (duplo clique)
+- Arrastar e posicionar
+- Redimensionar e rotacionar
+- Seleção visual com Transformer
+- Persistência automática
+
+### Elementos de Imagem
+- Upload local (DataURL)
+- Arrastar, redimensionar e rotacionar
+- Seleção visual
+- Persistência automática
 
 ---
 
-## 🚀 Como Executar
+## 👨‍🎓 Student (Interação)
+
+- Interface separada por rota (`/student/:sessionId`)
+- Recebe perguntas publicadas pelo professor
+- Envia respostas (votos ou palavras)
+- Atualizações refletidas imediatamente no Teacher
+- Controle para evitar múltiplos votos no mesmo slide
+
+---
+
+## ⌨️ Controles e Atalhos
+
+- `Delete / Backspace` → remover elemento selecionado
+- Clique simples → selecionar
+- Duplo clique → editar texto
+- Clique no fundo → desselecionar
+- `Enter / Escape` → finalizar edição de texto
+
+---
+
+## 💾 Persistência
+
+- Implementada com **Zustand + persist**
+- Slides e elementos são salvos automaticamente no `localStorage`
+- Estado restaurado ao recarregar a página
+
+> ℹ️ Imagens são armazenadas como **base64 (DataURL)**.  
+> Em produção, isso seria substituído por upload + URL.
+
+---
+
+## 🧠 Arquitetura e Decisões Técnicas
+
+- **React + TypeScript** para segurança e legibilidade
+- **Zustand** para estado global simples e previsível
+- **Konva / React-Konva** para interação rica com canvas
+- Lógica desacoplada da camada visual
+- Store como **single source of truth**
+- Separação clara entre:
+  - UI
+  - Estado
+  - Canvas
+  - Regras de interação
+
+---
+
+## 🗺️ Rotas da Aplicação
+
+- `/` → Home
+- `/teacher` → Editor do Professor
+- `/student/:sessionId` → Interface do Aluno
+
+---
+
+## 🚦 Demo rápida (Real-time)
+
+> ⚠️ O evento `storage` funciona entre **abas ou janelas diferentes**
+
+1. Acesse `/teacher`
+2. Clique em **Iniciar sessão**
+3. Crie um slide interativo (Multiple Choice ou Word Cloud)
+4. Clique em **Publicar para alunos**
+5. Abra o link do aluno em outra aba (`/student/:sessionId`)
+6. Envie respostas e veja o Teacher atualizar em tempo real ✅
+
+---
+
+## 🚀 Como Executar o Projeto
 
 ### Pré-requisitos
-- Node.js (versão 16 ou superior)
+- Node.js 16+
 - npm ou yarn
 
-### Instalação e Execução
-
-1. **Clone o repositório**:
-   ```bash
-   git clone https://github.com/victoradler/interactive-slides-editor.git
-   cd interactive-slides-editor
-   ```
-
-2. **Instale as dependências**:
-   ```bash
-   npm install
-   ```
-
-3. **Execute o projeto em modo desenvolvimento**:
-   ```bash
-   npm run dev
-   ```
-
-4. **Abra no navegador**:
-   - A aplicação estará disponível em `http://localhost:5173`
-
-### Build para Produção
-
+### Instalação
 ```bash
-npm run build
-npm run preview
-```
+git clone https://github.com/victoradler/interactive-slides-editor.git
+cd interactive-slides-editor
+npm install
+
+
+Desenvolvido por [Victor Adler](https://github.com/victoradler10)```

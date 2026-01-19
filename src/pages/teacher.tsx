@@ -1,7 +1,80 @@
+import { useEffect, useMemo, useState } from "react";
 import { useSlidesStore } from "../store/useSlidesStore";
 import { useSessionStore } from "../store/useSessionStore";
 import { CanvasStage } from "../components/canvas/CanvasStage";
+import { MultipleChoiceModal } from "../components/ui/MultipleChoiceModal";
+import { WordCloudModal } from "../components/ui/WordCloudModal";
+import { InteractiveSlideTypeModal } from "../components/ui/InteractiveSlideTypeModal";
+import { SessionModal } from "../components/ui/SessionModal";
 import "./teacher.scss";
+
+// ===== localStorage helpers (sem backend) =====
+function getActiveKey(sessionId: string) {
+  return `teachy:session:${sessionId}:active`;
+}
+
+function getVotesKey(sessionId: string) {
+  return `teachy:session:${sessionId}:votes`;
+}
+
+function publishMultipleChoice(
+  sessionId: string,
+  slide: { id: string; question?: string; options?: string[] },
+) {
+  const payload = {
+    slideId: slide.id,
+    type: 'MULTIPLE_CHOICE',
+    question: slide.question ?? "",
+    options: slide.options ?? [],
+  };
+
+  localStorage.setItem(getActiveKey(sessionId), JSON.stringify(payload));
+  localStorage.setItem(getVotesKey(sessionId), JSON.stringify({}));
+}
+
+function publishWordCloud(
+  sessionId: string,
+  slide: { id: string; question?: string },
+) {
+  const payload = {
+    slideId: slide.id,
+    type: 'WORD_CLOUD',
+    question: slide.question ?? "",
+  };
+
+  localStorage.setItem(getActiveKey(sessionId), JSON.stringify(payload));
+  localStorage.setItem(getVotesKey(sessionId), JSON.stringify({}));
+}
+
+// ===== hook para votos ao vivo (entre abas) =====
+function useLiveVotes(sessionId: string | null) {
+  const [votes, setVotes] = useState<Record<string, number>>({});
+
+  const votesKey = useMemo(() => {
+    if (!sessionId) return "";
+    return getVotesKey(sessionId);
+  }, [sessionId]);
+
+  useEffect(() => {
+    if (!sessionId) return;
+
+    const readVotes = () => {
+      const raw = localStorage.getItem(votesKey);
+      setVotes(raw ? JSON.parse(raw) : {});
+    };
+
+    readVotes();
+
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === votesKey) readVotes();
+    };
+
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [sessionId, votesKey]);
+
+  return votes;
+}
 
 export default function TeacherPage() {
   const slides = useSlidesStore((s) => s.slides);
@@ -12,7 +85,38 @@ export default function TeacherPage() {
   const addTextElement = useSlidesStore((s) => s.addTextElement);
   const addImageElement = useSlidesStore((s) => s.addImageElement);
 
+  const addMultipleChoiceSlide = useSlidesStore(
+    (s) => s.addMultipleChoiceSlide,
+  );
+  const addWordCloudSlide = useSlidesStore((s) => s.addWordCloudSlide);
+  const updateSlideMeta = useSlidesStore((s) => s.updateSlideMeta);
+
   const { sessionId, startSession, resetSession } = useSessionStore();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isWordCloudModalOpen, setIsWordCloudModalOpen] = useState(false);
+  const [isTypeModalOpen, setIsTypeModalOpen] = useState(false);
+  const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const activeSlide = slides.find((s) => s.id === activeSlideId) ?? null;
+  const votes = useLiveVotes(sessionId);
+
+  const handleSelectInteractiveType = (type: 'MULTIPLE_CHOICE' | 'WORD_CLOUD') => {
+    if (type === 'MULTIPLE_CHOICE') {
+      addMultipleChoiceSlide?.();
+    } else {
+      addWordCloudSlide?.();
+    }
+    setIsSidebarOpen(false);
+  };
+
+  const handleStartSession = () => {
+    if (!sessionId) {
+      startSession();
+    }
+    setIsSessionModalOpen(true);
+  };
 
   const handleAddImage = () => {
     const input = document.createElement("input");
@@ -26,6 +130,7 @@ export default function TeacherPage() {
       const reader = new FileReader();
       reader.onload = () => {
         addImageElement(reader.result as string);
+        setIsSidebarOpen(false);
       };
       reader.readAsDataURL(file);
     };
@@ -33,14 +138,43 @@ export default function TeacherPage() {
     input.click();
   };
 
+  const handleSlideClick = (slideId: string) => {
+    setActiveSlide(slideId);
+    setIsSidebarOpen(false);
+  };
+
+  const handleAddSlide = () => {
+    addSlide();
+    setIsSidebarOpen(false);
+  };
+
+  const handleAddText = () => {
+    addTextElement();
+    setIsSidebarOpen(false);
+  };
+
   return (
     <div className="teacher-page">
-      <aside className="sidebar">
+      <button 
+        className="sidebar-toggle"
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        aria-label="Toggle menu"
+      >
+        {isSidebarOpen ? '✕' : '☰'}
+      </button>
+
+      <div 
+        className={`sidebar-overlay ${isSidebarOpen ? 'active' : ''}`}
+        onClick={() => setIsSidebarOpen(false)}
+      />
+
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <h2>Editor de Slides</h2>
         </div>
+
         <div className="sidebar-controls">
-          <button onClick={addSlide} className="btn-add-slide">
+          <button onClick={handleAddSlide} className="btn-add-slide">
             Adicionar Slide
             <div className="icon">
               <svg
@@ -58,50 +192,57 @@ export default function TeacherPage() {
             </div>
           </button>
 
-          <button onClick={addTextElement} className="btn-add-text">
-            + Texto
-          </button>
-          <button onClick={handleAddImage} className="btn-add-image">
-            + Imagem
-          </button>
-
-          <div style={{ marginTop: 12 }}>
-            {!sessionId ? (
-              <button onClick={startSession} className="btn">
-                Iniciar sessão
-              </button>
-            ) : (
-              <div style={{ display: "grid", gap: 8 }}>
-                <div>
-                  <small>Código da sessão</small>
-                  <div style={{ fontWeight: 700 }}>{sessionId}</div>
-                </div>
-
-                <a
-                  href={`/student/${sessionId}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Abrir link do aluno
-                </a>
-
-                <button
-                  onClick={() =>
-                    navigator.clipboard.writeText(
-                      `${window.location.origin}/student/${sessionId}`
-                    )
-                  }
-                  className="btn"
-                >
-                  Copiar link
-                </button>
-
-                <button onClick={resetSession} className="btn">
-                  Encerrar sessão
-                </button>
-              </div>
-            )}
+          <div className="element-buttons-row">
+            <button onClick={handleAddText} className="btn-add-text">
+              + Texto
+            </button>
+            <button onClick={handleAddImage} className="btn-add-image">
+              + Imagem
+            </button>
           </div>
+
+          <button
+            onClick={() => {
+              setIsTypeModalOpen(true);
+              setIsSidebarOpen(false);
+            }}
+            className="btn-addslide-interactive"
+            title="Cria um slide e interaja com seus alunos"
+          >
+            Slide interativo
+          </button>
+
+          {activeSlide?.type === "MULTIPLE_CHOICE" && (
+            <button
+              onClick={() => {
+                setIsModalOpen(true);
+                setIsSidebarOpen(false);
+              }}
+              className="btn-configure-mc"
+            >
+              ⚙️ Configurar Pergunta
+            </button>
+          )}
+
+          {activeSlide?.type === "WORD_CLOUD" && (
+            <button
+              onClick={() => {
+                setIsWordCloudModalOpen(true);
+                setIsSidebarOpen(false);
+              }}
+              className="btn-configure-mc"
+            >
+              ⚙️ Configurar Word Cloud
+            </button>
+          )}
+
+          {slides.some((slide) => slide.type === "MULTIPLE_CHOICE" || slide.type === "WORD_CLOUD") && (
+            <div style={{ marginTop: 12 }}>
+              <button onClick={handleStartSession} className="btn">
+                {sessionId ? "Gerenciar sessão" : "Iniciar sessão"}
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="slides-container">
@@ -110,12 +251,12 @@ export default function TeacherPage() {
             {slides.map((slide, index) => (
               <li
                 key={slide.id}
-                className={`slide-item ${
-                  slide.id === activeSlideId ? "active" : ""
-                }`}
+                className={`slide-item ${slide.id === activeSlideId ? "active" : ""}`}
               >
-                <span onClick={() => setActiveSlide(slide.id)}>
-                  Slide {index + 1}
+                <span onClick={() => handleSlideClick(slide.id)}>
+                  Slide {index + 1}{" "}
+                  {slide.type === "MULTIPLE_CHOICE" ? "• (MC)" : ""}
+                  {slide.type === "WORD_CLOUD" ? "• (WC)" : ""}
                 </span>
                 <button
                   className="slide-delete-btn"
@@ -129,9 +270,44 @@ export default function TeacherPage() {
           </ul>
         </div>
       </aside>
+
       <main className="canvas-area">
         <CanvasStage />
       </main>
+
+      <MultipleChoiceModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        activeSlide={activeSlide}
+        updateSlideMeta={updateSlideMeta}
+        sessionId={sessionId}
+        publishMultipleChoice={publishMultipleChoice}
+        votes={votes}
+      />
+
+      <WordCloudModal
+        isOpen={isWordCloudModalOpen}
+        onClose={() => setIsWordCloudModalOpen(false)}
+        activeSlide={activeSlide}
+        updateSlideMeta={updateSlideMeta}
+        sessionId={sessionId}
+        publishWordCloud={publishWordCloud}
+        words={votes}
+      />
+
+      <InteractiveSlideTypeModal
+        isOpen={isTypeModalOpen}
+        onClose={() => setIsTypeModalOpen(false)}
+        onSelectType={handleSelectInteractiveType}
+      />
+
+      <SessionModal
+        isOpen={isSessionModalOpen}
+        onClose={() => setIsSessionModalOpen(false)}
+        sessionId={sessionId}
+        startSession={startSession}
+        resetSession={resetSession}
+      />
     </div>
   );
 }
