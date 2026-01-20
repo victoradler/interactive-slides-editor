@@ -12,26 +12,20 @@ export function WordCloudCanvas({ question, words }: WordCloudCanvasProps) {
       return;
     }
 
-    // Calcular frequências e ordenar
     const sortedWords = Object.entries(words).sort(([, a], [, b]) => b - a);
     const maxCount = sortedWords[0]?.[1] || 1;
 
-    // Cores para as palavras
     const colors = [
       '#667eea', '#764ba2', '#48bb78', '#f6ad55', 
       '#fc8181', '#9f7aea', '#4299e1', '#ed8936'
     ];
 
-    // Gerar posições aleatórias para as palavras
     const positions: WordPosition[] = sortedWords.map(([word, count], idx) => {
-      // Tamanho da fonte proporcional à frequência (min 16, max 64)
       const fontSize = Math.max(16, Math.min(64, (count / maxCount) * 48 + 16));
       
-      // Estimar largura aproximada da palavra (caracteres * fontSize * 0.6)
       const estimatedWidth = word.length * fontSize * 0.6;
       const estimatedHeight = fontSize * 1.2;
       
-      // Área disponível para palavras (deixando margem superior para título)
       const availableTop = 110;
       const availableLeft = 40;
       const availableRight = CANVAS_WIDTH - 40;
@@ -40,7 +34,6 @@ export function WordCloudCanvas({ question, words }: WordCloudCanvasProps) {
       const availableWidth = availableRight - availableLeft - estimatedWidth;
       const availableHeight = availableBottom - availableTop - estimatedHeight;
       
-      // Posição aleatória, tentando centralizar palavras maiores
       const centerBias = count / maxCount; // 0 a 1
       const xRange = availableWidth * (1 - centerBias * 0.3);
       const yRange = availableHeight * (1 - centerBias * 0.3);
@@ -104,7 +97,6 @@ export function WordCloudCanvas({ question, words }: WordCloudCanvasProps) {
             />
           )}
 
-          {/* Badge com total de palavras */}
           {totalWords > 0 && (
             <>
               <Rect
@@ -132,7 +124,6 @@ export function WordCloudCanvas({ question, words }: WordCloudCanvasProps) {
             </>
           )}
 
-          {/* Nuvem de Palavras */}
           {wordPositions.length > 0 ? (
             wordPositions.map((wp, idx) => (
               <KonvaText

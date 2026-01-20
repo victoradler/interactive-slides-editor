@@ -142,6 +142,29 @@ Foram implementados **3 tipos de slides interativos**, atendendo ao requisito do
 git clone https://github.com/victoradler/interactive-slides-editor.git
 cd interactive-slides-editor
 npm install
+```
 
+### Executar em desenvolvimento
+```bash
+npm run dev
+```
+
+Acesse em `http://localhost:5173`
+
+---
+
+## 🧪 Testes Automatizados
+
+Este projeto está configurado com **Cypress** para testes E2E automatizados do `teacher.tsx`.
+
+### Executar Testes
+
+```bash
+# Modo interativo (recomendado)
+npx cypress open
+
+
+
+---
 
 Desenvolvido por [Victor Adler](https://github.com/victoradler10)```
