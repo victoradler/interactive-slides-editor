@@ -161,7 +161,19 @@ Este projeto está configurado com **Cypress** para testes E2E automatizados do 
 
 ```bash
 # Modo interativo (recomendado)
+abra um novo terminal
+digite:
 npx cypress open
+
+escolha: E2E TESTING
+
+escolha o navegador (chromme de preferencia) e depois START E2E TESTING IN CHROME
+
+clique em teacher.cy.ts, neste momento todo o fluxo da sessao de perguntas e respostas sera validado pelo teste automatiza.
+
+
+
+
 
 
 
