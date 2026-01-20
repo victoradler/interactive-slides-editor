@@ -13,7 +13,10 @@ function getActiveKey(sessionId: string) {
   return `teachy:session:${sessionId}:active`;
 }
 
-function getVotesKey(sessionId: string) {
+function getVotesKey(sessionId: string, slideId?: string) {
+  if (slideId) {
+    return `teachy:session:${sessionId}:slide:${slideId}:votes`;
+  }
   return `teachy:session:${sessionId}:votes`;
 }
 
@@ -46,7 +49,7 @@ function useActiveSlide(sessionId: string | undefined) {
 }
 
 function vote(sessionId: string, slideId: string, optionIndex: number) {
-  const votesKey = getVotesKey(sessionId);
+  const votesKey = getVotesKey(sessionId, slideId);
   const raw = localStorage.getItem(votesKey);
   const votes = raw ? JSON.parse(raw) : {};
   votes[String(optionIndex)] = (votes[String(optionIndex)] || 0) + 1;
@@ -57,13 +60,12 @@ function vote(sessionId: string, slideId: string, optionIndex: number) {
 }
 
 function submitWord(sessionId: string, slideId: string, word: string) {
-  const votesKey = getVotesKey(sessionId);
+  const votesKey = getVotesKey(sessionId, slideId);
   const raw = localStorage.getItem(votesKey);
   const words = raw ? JSON.parse(raw) : {};
   words[word] = (words[word] || 0) + 1;
   localStorage.setItem(votesKey, JSON.stringify(words));
   
-  // Marcar que o aluno já enviou palavra neste slide
   localStorage.setItem(getVotedKey(sessionId, slideId), word);
 }
 
@@ -84,7 +86,7 @@ export default function StudentPage() {
     const [wordInput, setWordInput] = useState<string>("");
     const [showSuccess, setShowSuccess] = useState(false);
 
-    // Verificar se já votou quando o slide muda
+    // Verificar se já votou quando o slide muda, importante esse useEffect para manter o estado sincronizado!
     useEffect(() => {
       if (sessionId && activeSlide) {
         if (activeSlide.type === 'MULTIPLE_CHOICE') {

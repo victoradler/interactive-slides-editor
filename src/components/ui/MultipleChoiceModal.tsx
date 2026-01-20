@@ -33,7 +33,7 @@ export function MultipleChoiceModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="mc-modal">
-        <h3 className="mc-modal__title">⚙️ Configurar Multiple Choice</h3>
+        <h3 className="mc-modal__title">⚙️ Multipla Escolha</h3>
 
         <div className="mc-modal__section">
           <label className="mc-modal__label">

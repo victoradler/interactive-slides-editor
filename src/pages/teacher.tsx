@@ -13,7 +13,10 @@ function getActiveKey(sessionId: string) {
   return `teachy:session:${sessionId}:active`;
 }
 
-function getVotesKey(sessionId: string) {
+function getVotesKey(sessionId: string, slideId?: string) {
+  if (slideId) {
+    return `teachy:session:${sessionId}:slide:${slideId}:votes`;
+  }
   return `teachy:session:${sessionId}:votes`;
 }
 
@@ -29,7 +32,13 @@ function publishMultipleChoice(
   };
 
   localStorage.setItem(getActiveKey(sessionId), JSON.stringify(payload));
-  localStorage.setItem(getVotesKey(sessionId), JSON.stringify({}));
+  
+  // Usar chave específica do slide para não misturar votos de slides diferentes
+  const votesKey = getVotesKey(sessionId, slide.id);
+  const existingVotes = localStorage.getItem(votesKey);
+  if (!existingVotes) {
+    localStorage.setItem(votesKey, JSON.stringify({}));
+  }
 }
 
 function publishWordCloud(
@@ -43,20 +52,26 @@ function publishWordCloud(
   };
 
   localStorage.setItem(getActiveKey(sessionId), JSON.stringify(payload));
-  localStorage.setItem(getVotesKey(sessionId), JSON.stringify({}));
+  
+  // Usar chave específica do slide para não misturar palavras de slides diferentes
+  const votesKey = getVotesKey(sessionId, slide.id);
+  const existingVotes = localStorage.getItem(votesKey);
+  if (!existingVotes) {
+    localStorage.setItem(votesKey, JSON.stringify({}));
+  }
 }
 
 // ===== hook para votos ao vivo (entre abas) =====
-function useLiveVotes(sessionId: string | null) {
+function useLiveVotes(sessionId: string | null, slideId: string | null) {
   const [votes, setVotes] = useState<Record<string, number>>({});
 
   const votesKey = useMemo(() => {
-    if (!sessionId) return "";
-    return getVotesKey(sessionId);
-  }, [sessionId]);
+    if (!sessionId || !slideId) return "";
+    return getVotesKey(sessionId, slideId);
+  }, [sessionId, slideId]);
 
   useEffect(() => {
-    if (!sessionId) return;
+    if (!sessionId || !slideId) return;
 
     const readVotes = () => {
       const raw = localStorage.getItem(votesKey);
@@ -71,7 +86,7 @@ function useLiveVotes(sessionId: string | null) {
 
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
-  }, [sessionId, votesKey]);
+  }, [sessionId, slideId, votesKey]);
 
   return votes;
 }
@@ -100,7 +115,7 @@ export default function TeacherPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const activeSlide = slides.find((s) => s.id === activeSlideId) ?? null;
-  const votes = useLiveVotes(sessionId);
+  const votes = useLiveVotes(sessionId, activeSlideId);
 
   const handleSelectInteractiveType = (type: 'MULTIPLE_CHOICE' | 'WORD_CLOUD') => {
     if (type === 'MULTIPLE_CHOICE') {

@@ -8,18 +8,20 @@ import { MultipleChoiceCanvas } from "./MultipleChoiceCanvas";
 import { WordCloudCanvas } from "./WordCloudCanvas";
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from "../../constants/canvas";
 
-// Helper para votos
-function getVotesKey(sessionId: string) {
+function getVotesKey(sessionId: string, slideId?: string) {
+  if (slideId) {
+    return `teachy:session:${sessionId}:slide:${slideId}:votes`;
+  }
   return `teachy:session:${sessionId}:votes`;
 }
 
-function useLiveVotes(sessionId: string | null) {
+function useLiveVotes(sessionId: string | null, slideId: string | null) {
   const [votes, setVotes] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    if (!sessionId) return;
+    if (!sessionId || !slideId) return;
 
-    const votesKey = getVotesKey(sessionId);
+    const votesKey = getVotesKey(sessionId, slideId);
 
     const readVotes = () => {
       const raw = localStorage.getItem(votesKey);
@@ -34,7 +36,7 @@ function useLiveVotes(sessionId: string | null) {
 
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
-  }, [sessionId]);
+  }, [sessionId, slideId]);
 
   return votes;
 }
@@ -80,7 +82,7 @@ export function CanvasStage() {
   const { slides, activeSlideId, removeElement } = useSlidesStore();
   const { sessionId } = useSessionStore();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const votes = useLiveVotes(sessionId);
+  const votes = useLiveVotes(sessionId, activeSlideId);
 
   const activeSlide = slides.find(slide => slide.id === activeSlideId);
 

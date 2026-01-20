@@ -6,7 +6,6 @@ import { MultipleChoiceCanvasProps } from "../../types/canvas";
 export function MultipleChoiceCanvas({ question, options, votes }: MultipleChoiceCanvasProps) {
   const [animatedVotes, setAnimatedVotes] = useState<Record<string, number>>({});
 
-  // Animar as barras do gráfico
   useEffect(() => {
     const timer = setTimeout(() => {
       setAnimatedVotes(votes);

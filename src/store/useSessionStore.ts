@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { nanoid } from "nanoid";
 
 type SessionStore = {
@@ -7,18 +8,28 @@ type SessionStore = {
   resetSession: () => void;
 };
 
-export const useSessionStore = create<SessionStore>((set) => ({
-  sessionId: null,
-  startSession: () => set({ sessionId: nanoid(6) }),
-  resetSession: () => set({ sessionId: null }),
-}));
+export const useSessionStore = create<SessionStore>()(
+  persist(
+    (set) => ({
+      sessionId: null,
+      startSession: () => set({ sessionId: nanoid(6) }),
+      resetSession: () => set({ sessionId: null }),
+    }),
+    {
+      name: "teachy-session-storage",
+    }
+  )
+);
 
 
 export function getActiveKey(sessionId: string) {
   return `teachy:session:${sessionId}:active`;
 }
 
-export function getVotesKey(sessionId: string) {
+export function getVotesKey(sessionId: string, slideId?: string) {
+  if (slideId) {
+    return `teachy:session:${sessionId}:slide:${slideId}:votes`;
+  }
   return `teachy:session:${sessionId}:votes`;
 }
 
@@ -31,5 +42,10 @@ export function publishMultipleChoice(sessionId: string, slide: { id: string; qu
 
   localStorage.setItem(getActiveKey(sessionId), JSON.stringify(payload));
 
-  localStorage.setItem(getVotesKey(sessionId), JSON.stringify({}));
-}
+  // Usar chave específica do slide para não misturar votos de slides diferentes
+  const votesKey = getVotesKey(sessionId, slide.id);
+  const existingVotes = localStorage.getItem(votesKey);
+  if (!existingVotes) {
+    localStorage.setItem(votesKey, JSON.stringify({}));
+  }
+} 
