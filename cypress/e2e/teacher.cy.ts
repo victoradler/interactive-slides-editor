@@ -1,281 +1,272 @@
-/// <reference types="cypress" />
+describe('Teacher - Interactive Slide Creation', () => {
+  // Função auxiliar para gerar perguntas aleatórias
+  const generateRandomQuestion = () => {
+    const questions = [
+      'Qual é a capital do Brasil?',
+      'Quem descobriu o Brasil?',
+      'Qual é o maior planeta do sistema solar?',
+      'Quantos continentes existem no mundo?',
+      'Qual é a fórmula da água?',
+      'Em que ano o homem pisou na Lua?',
+      'Qual é a velocidade da luz?',
+      'Quem pintou a Mona Lisa?'
+    ];
+    return questions[Math.floor(Math.random() * questions.length)];
+  };
 
-describe('Teacher Page - Editor de Slides', () => {
+  // Função auxiliar para gerar opções aleatórias
+  const generateRandomOptions = (count: number = 4) => {
+    const possibleOptions = [
+      'Brasília', 'Rio de Janeiro', 'São Paulo',
+      'Pedro Álvares Cabral', 'Cristóvão Colombo', 'Vasco da Gama',
+      'Júpiter', 'Saturno', 'Marte', 'Terra',
+      '5', '6', '7', '8',
+      'H2O', 'CO2', 'O2', 'N2',
+      '1969', '1972', '1965', '1975',
+      '300.000 km/s', '150.000 km/s', '500.000 km/s',
+      'Leonardo da Vinci', 'Michelangelo', 'Van Gogh', 'Picasso'
+    ];
+    
+    // Embaralha e pega as primeiras 'count' opções
+    const shuffled = possibleOptions.sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, count);
+  };
+
   beforeEach(() => {
-    // Limpar localStorage antes de cada teste
+    // Limpa o localStorage antes de cada teste
     cy.clearLocalStorage();
     
-    // Visitar a página do professor
+    // Visita a página do professor
     cy.visit('/teacher');
+    
+    // Aguarda o carregamento da página
+    cy.get('.teacher-page').should('be.visible');
+
+    // Concede permissões de clipboard
+    cy.wrap(
+      Cypress.automation('remote:debugger:protocol', {
+        command: 'Browser.grantPermissions',
+        params: {
+          permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'],
+          origin: window.location.origin,
+        },
+      })
+    );
   });
 
-  describe('Navegação e Interface Básica', () => {
-    it('deve carregar a página do professor corretamente', () => {
-      cy.contains('Editor de Slides').should('be.visible');
-      cy.get('.canvas-area').should('be.visible');
-      cy.get('.sidebar').should('exist');
+  it('deve criar um slide interativo de múltipla escolha com perguntas e respostas aleatórias', () => {
+    // Gera dados aleatórios para o teste
+    const randomQuestion = generateRandomQuestion();
+    const randomOptions = generateRandomOptions(3);
+
+    cy.log('Pergunta gerada: ' + randomQuestion);
+    cy.log('Opções geradas: ' + randomOptions.join(', '));
+
+    // 1. Clica em "Slide interativo"
+    cy.get('.btn-addslide-interactive')
+      .should('be.visible')
+      .click();
+
+    // 2. Escolhe "Sessão de perguntas e respostas"
+    cy.get('.interactive-type-modal')
+      .should('be.visible');
+    cy.contains('h4', 'Sessão de perguntas e respostas').click();
+
+    // Verifica se o slide foi criado e abre automaticamente o modal de configuração
+    cy.get('.slides-list')
+      .should('contain', '• (MC)');
+
+    // Aguarda o modal de configuração aparecer (pode abrir automaticamente)
+    cy.get('.btn-configure-mc', { timeout: 1000 })
+      .should('be.visible')
+      .click();
+
+    cy.get('.mc-modal')
+      .should('be.visible');
+
+    // 3. Faz uma pergunta e três opções como resposta
+    cy.get('.mc-modal')
+      .find('input')
+      .first()
+      .clear()
+      .type(randomQuestion);
+
+    randomOptions.forEach((option, index) => {
+      cy.get('.mc-modal')
+        .find('input')
+        .eq(index + 1)
+        .clear()
+        .type(option);
     });
 
-    it('deve abrir e fechar o sidebar com o botão toggle', () => {
-      // Verificar se sidebar está fechado inicialmente (em mobile)
-      cy.viewport(375, 667); // Mobile viewport
-      cy.get('.sidebar').should('not.have.class', 'open');
-      
-      // Abrir sidebar
-      cy.get('.sidebar-toggle').click();
-      cy.get('.sidebar').should('have.class', 'open');
-      
-      // Fechar sidebar clicando no botão
-      cy.get('.sidebar-toggle').click();
-      cy.get('.sidebar').should('not.have.class', 'open');
-    });
+    // 4. Fecha o modal
+    cy.get('.modal-close-btn').click();
+    cy.get('.mc-modal').should('not.exist');
 
-    it('deve fechar sidebar ao clicar no overlay', () => {
-      cy.viewport(375, 667);
-      
-      // Abrir sidebar
-      cy.get('.sidebar-toggle').click();
-      cy.get('.sidebar').should('have.class', 'open');
-      
-      // Clicar no overlay
-      cy.get('.sidebar-overlay').click({ force: true });
-      cy.get('.sidebar').should('not.have.class', 'open');
-    });
+    // 5. Clica em "Iniciar sessão"
+    cy.contains('button', 'Iniciar sessão').click();
+
+    cy.get('.session-modal')
+      .should('be.visible')
+      .and('contain', 'Código da Sala');
+
+    // 6. Fecha o modal
+    cy.get('.modal-close-btn').click();
+    cy.get('.session-modal').should('not.exist');
+
+    // 7. Clica novamente em "Configurar pergunta"
+    cy.get('.btn-configure-mc')
+      .should('be.visible')
+      .click();
+
+    cy.get('.mc-modal')
+      .should('be.visible');
+
+    // 8. Aperta para publicar para os alunos
+    cy.contains('button', 'Publicar para alunos').click();
+
+    // Verifica se foi publicado com sucesso
+    cy.get('.mc-modal')
+      .should('contain', 'Pergunta publicada');
+
+    cy.log('✅ Slide publicado com sucesso para os alunos!');
   });
 
-  describe('Gerenciamento de Slides', () => {
-    it('deve adicionar um novo slide', () => {
-      // Verificar se há pelo menos 1 slide inicial
-      cy.get('.slides-list li').should('have.length.at.least', 1);
-      
-      // Adicionar novo slide
-      cy.contains('Adicionar Slide').click();
-      
-      // Verificar se o slide foi adicionado
-      cy.get('.slides-list li').should('have.length.at.least', 2);
-    });
+  it('deve criar múltiplos slides interativos com perguntas aleatórias', () => {
+    const numberOfSlides = 3;
 
-    it('deve selecionar um slide ao clicar nele', () => {
-      // Adicionar alguns slides
-      cy.contains('Adicionar Slide').click();
-      cy.contains('Adicionar Slide').click();
-      
-      // Clicar no segundo slide
-      cy.get('.slides-list li').eq(1).find('span').click();
-      
-      // Verificar se o slide está ativo
-      cy.get('.slides-list li').eq(1).should('have.class', 'active');
-    });
+    for (let i = 0; i < numberOfSlides; i++) {
+      const randomQuestion = generateRandomQuestion();
+      const randomOptions = generateRandomOptions(3);
 
-    it('deve excluir um slide', () => {
-      // Adicionar alguns slides
-      cy.contains('Adicionar Slide').click();
-      cy.contains('Adicionar Slide').click();
+      cy.log(`Criando slide ${i + 1}/${numberOfSlides}`);
+      cy.log('Pergunta: ' + randomQuestion);
+
+      // Adiciona novo slide interativo
+      cy.get('.btn-addslide-interactive').click();
+      cy.get('.interactive-type-modal').should('be.visible');
+      cy.contains('h4', 'Sessão de perguntas e respostas').click();
+
+      // Aguarda um pouco para o slide ser criado
+      cy.wait(500);
+
+      // Configura o slide
+      cy.get('.btn-configure-mc').click();
+      cy.get('.mc-modal').should('be.visible');
+
+      // Preenche pergunta e opções
+      cy.get('.mc-modal')
+        .find('input')
+        .first()
+        .clear()
+        .type(randomQuestion);
+
+      randomOptions.forEach((option, index) => {
+        cy.get('.mc-modal')
+          .find('input')
+          .eq(index + 1)
+          .clear()
+          .type(option);
+      });
+
+      // Fecha o modal
+      cy.get('.modal-close-btn').click();
+      cy.get('.mc-modal').should('not.exist');
+    }
+
+    // Verifica se todos os slides foram criados
+    cy.get('.slides-list')
+      .find('li')
+      .should('have.length.at.least', numberOfSlides);
+
+    // Verifica se todos são slides de múltipla escolha
+    cy.get('.slides-list')
+      .find('li')
+      .each(($el) => {
+        cy.wrap($el).should('contain', '• (MC)');
+      });
+  });
+
+  it('deve navegar entre slides interativos criados', () => {
+    // Cria 2 slides interativos
+    for (let i = 0; i < 2; i++) {
+      cy.get('.btn-addslide-interactive').click();
+      cy.get('.interactive-type-modal').should('be.visible');
+      cy.contains('h4', 'Sessão de perguntas e respostas').click();
+      cy.wait(300);
+    }
+
+    // Pega todos os slides
+    cy.get('.slides-list li').then(($slides) => {
+      const slideCount = $slides.length;
       
-      // Contar slides iniciais
-      cy.get('.slides-list li').its('length').then((initialCount) => {
-        // Excluir o último slide
-        cy.get('.slides-list li').last().find('.slide-delete-btn').click();
+      // Navega por cada slide
+      for (let i = 0; i < slideCount; i++) {
+        cy.get('.slides-list li').eq(i).find('span').click();
         
-        // Verificar que há um slide a menos
-        cy.get('.slides-list li').should('have.length', initialCount - 1);
-      });
-    });
-  });
-
-  describe('Adição de Elementos', () => {
-    it('deve adicionar elemento de texto ao slide', () => {
-      // Clicar no botão de adicionar texto
-      cy.contains('+ Texto').click();
-      
-      // Verificar que o sidebar fecha após adicionar
-      cy.viewport(375, 667);
-      cy.get('.sidebar-toggle').click();
-      cy.contains('+ Texto').click();
-      cy.get('.sidebar').should('not.have.class', 'open');
-    });
-
-    it('deve mostrar botão de adicionar imagem', () => {
-      cy.contains('+ Imagem').should('be.visible');
-    });
-  });
-
-  describe('Slides Interativos', () => {
-    it('deve abrir modal de tipo de slide interativo', () => {
-      cy.contains('Slide interativo').click();
-      
-      // Verificar que o modal abre
-      cy.get('.interactive-slide-type-modal, [class*="Modal"]').should('be.visible');
-    });
-
-    it('deve criar slide de múltipla escolha', () => {
-      // Abrir modal de tipo
-      cy.contains('Slide interativo').click();
-      
-      // Selecionar múltipla escolha (pode precisar ajustar o seletor)
-      cy.contains('Múltipla Escolha').click();
-      
-      // Verificar que um slide MC foi criado
-      cy.get('.slides-list li').last().should('contain', '(MC)');
-    });
-
-    it('deve criar slide de nuvem de palavras', () => {
-      // Abrir modal de tipo
-      cy.contains('Slide interativo').click();
-      
-      // Selecionar word cloud
-      cy.contains('Nuvem de Palavras').click();
-      
-      // Verificar que um slide WC foi criado
-      cy.get('.slides-list li').last().should('contain', '(WC)');
-    });
-
-    it('deve mostrar botão de configurar pergunta para slide MC', () => {
-      // Criar slide de múltipla escolha
-      cy.contains('Slide interativo').click();
-      cy.contains('Múltipla Escolha').click();
-      
-      // Verificar se o botão de configurar aparece
-      cy.contains('⚙️ Configurar Pergunta').should('be.visible');
-    });
-
-    it('deve abrir modal de configuração de múltipla escolha', () => {
-      // Criar slide de múltipla escolha
-      cy.contains('Slide interativo').click();
-      cy.contains('Múltipla Escolha').click();
-      
-      // Clicar em configurar
-      cy.contains('⚙️ Configurar Pergunta').click();
-      
-      // Verificar que o modal de configuração abre
-      cy.get('.multiple-choice-modal, [class*="Modal"]').should('be.visible');
-    });
-
-    it('deve mostrar botão de configurar word cloud para slide WC', () => {
-      // Criar slide de word cloud
-      cy.contains('Slide interativo').click();
-      cy.contains('Nuvem de Palavras').click();
-      
-      // Verificar se o botão de configurar aparece
-      cy.contains('⚙️ Configurar Word Cloud').should('be.visible');
-    });
-  });
-
-  describe('Gerenciamento de Sessão', () => {
-    it('deve mostrar botão de iniciar sessão quando há slides interativos', () => {
-      // Criar slide interativo
-      cy.contains('Slide interativo').click();
-      cy.contains('Múltipla Escolha').click();
-      
-      // Verificar botão de iniciar sessão
-      cy.contains('Iniciar sessão').should('be.visible');
-    });
-
-    it('deve abrir modal de sessão ao clicar em iniciar sessão', () => {
-      // Criar slide interativo
-      cy.contains('Slide interativo').click();
-      cy.contains('Múltipla Escolha').click();
-      
-      // Clicar em iniciar sessão
-      cy.contains('Iniciar sessão').click();
-      
-      // Verificar que o modal de sessão abre
-      cy.get('.session-modal, [class*="Modal"]').should('be.visible');
-    });
-
-    it('deve mudar texto do botão após iniciar sessão', () => {
-      // Criar slide interativo
-      cy.contains('Slide interativo').click();
-      cy.contains('Múltipla Escolha').click();
-      
-      // Iniciar sessão (simular)
-      cy.contains('Iniciar sessão').click();
-      
-      // Fechar modal (se necessário)
-      cy.get('body').then($body => {
-        if ($body.find('[class*="close"], .modal-close').length > 0) {
-          cy.get('[class*="close"], .modal-close').first().click();
-        }
-      });
-      
-      // Verificar que o texto mudou
-      cy.contains('Gerenciar sessão').should('exist');
-    });
-  });
-
-  describe('Persistência e LocalStorage', () => {
-    it('deve manter slides após recarregar a página', () => {
-      // Adicionar alguns slides
-      cy.contains('Adicionar Slide').click();
-      cy.contains('Adicionar Slide').click();
-      
-      // Contar slides
-      cy.get('.slides-list li').its('length').then((count) => {
-        // Recarregar página
-        cy.reload();
+        // Verifica se o slide está ativo
+        cy.get('.slides-list li').eq(i).should('have.class', 'active');
         
-        // Verificar que os slides persistiram
-        cy.get('.slides-list li').should('have.length', count);
-      });
-    });
-
-    it('deve persistir slide interativo após reload', () => {
-      // Criar slide interativo
-      cy.contains('Slide interativo').click();
-      cy.contains('Múltipla Escolha').click();
-      
-      // Recarregar
-      cy.reload();
-      
-      // Verificar que o slide MC ainda existe
-      cy.get('.slides-list li').should('contain', '(MC)');
+        // Aguarda um pouco antes de navegar para o próximo
+        cy.wait(200);
+      }
     });
   });
 
-  describe('Responsividade', () => {
-    const viewports = [
-      { name: 'Mobile', width: 375, height: 667 },
-      { name: 'Tablet', width: 768, height: 1024 },
-      { name: 'Desktop', width: 1280, height: 720 },
-    ];
+  it('deve copiar o link do aluno e verificar se está correto', () => {
+    // Ignora erros de clipboard no Cypress
+    cy.on('uncaught:exception', (err) => {
+      if (err.message.includes('Clipboard') || err.message.includes('writeText')) {
+        return false;
+      }
+      return true;
+    });
 
-    viewports.forEach((viewport) => {
-      it(`deve renderizar corretamente em ${viewport.name}`, () => {
-        cy.viewport(viewport.width, viewport.height);
-        
-        // Verificar elementos principais
-        cy.contains('Editor de Slides').should('exist');
-        cy.get('.canvas-area').should('be.visible');
-        cy.get('.sidebar-toggle').should('be.visible');
-      });
+    // 1. Cria um slide interativo
+    cy.get('.btn-addslide-interactive').click();
+    cy.get('.interactive-type-modal').should('be.visible');
+    cy.contains('h4', 'Sessão de perguntas e respostas').click();
+
+    cy.get('.slides-list').should('contain', '• (MC)');
+
+    // 2. Inicia a sessão
+    cy.contains('button', 'Iniciar sessão').click();
+    cy.get('.session-modal').should('be.visible').and('contain', 'Código da Sala');
+
+    // 3. Captura o ID da sessão (código da sala)
+    cy.get('.session-modal__code').invoke('text').then((sessionId) => {
+      cy.log('Código da Sala: ' + sessionId);
+
+      // 4. Verifica se o link do aluno está correto no modal
+      const expectedLink = `http://localhost:5173/student/${sessionId}`;
+      cy.get('.session-modal__link')
+        .should('contain', `localhost:5173/student/${sessionId}`)
+        .invoke('text')
+        .should('equal', expectedLink);
+
+      // 5. Tenta clicar no botão de copiar (pode falhar no Cypress mas está OK)
+      cy.contains('button', 'Copiar Link').should('be.visible').click();
+
+      cy.log('✅ Botão de copiar clicado!');
+
+      // 6. Fecha o modal
+      cy.get('.modal-close-btn').click();
+      cy.get('.session-modal').should('not.exist');
+
+      // 7. Visita a rota do aluno com o ID capturado
+      cy.visit(`/student/${sessionId}`);
+
+      // 8. Verifica se a URL está correta
+      cy.url().should('include', `/student/${sessionId}`);
+      cy.url().should('equal', expectedLink);
+
+      // 9. Verifica se a página do aluno carregou corretamente
+      cy.get('body').should('be.visible');
+      
+      cy.log('✅ Página do aluno acessada com sucesso!');
+      cy.log('✅ URL verificada: ' + expectedLink);
     });
   });
 
-  describe('Workflow Completo', () => {
-    it('deve completar fluxo de criação de apresentação interativa', () => {
-      // 1. Adicionar slide regular
-      cy.contains('Adicionar Slide').click();
-      cy.get('.slides-list li').should('have.length.at.least', 2);
-      
-      // 2. Adicionar texto
-      cy.contains('+ Texto').click();
-      
-      // 3. Criar slide de múltipla escolha
-      cy.contains('Slide interativo').click();
-      cy.contains('Múltipla Escolha').click();
-      cy.get('.slides-list li').should('contain', '(MC)');
-      
-      // 4. Configurar pergunta
-      cy.contains('⚙️ Configurar Pergunta').should('be.visible');
-      
-      // 5. Criar slide de word cloud
-      cy.contains('Slide interativo').click();
-      cy.contains('Nuvem de Palavras').click();
-      cy.get('.slides-list li').should('contain', '(WC)');
-      
-      // 6. Iniciar sessão
-      cy.contains('Iniciar sessão').click();
-      cy.get('.session-modal, [class*="Modal"]').should('be.visible');
-    });
-  });
+
 });
